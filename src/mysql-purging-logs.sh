@@ -4,7 +4,11 @@
 # Version: 0.1
 
 # Mysql Path
-MYSQL="$(which mysql)"  
+# MYSQL="$(which mysql)"  
+
+# Docker exec
+CONTAINER_NAME=zadatak1_mariadb_1
+DOCK="docker exec $CONTAINER_NAME bash -c"
 
 Help()
 {
@@ -73,7 +77,8 @@ ExecuteOnDB ()
 {
    if GetArguments ; then
       if [ "$CMD" == "l" ] ; then
-         $MYSQL -e "SHOW BINARY LOGS;"
+         # $MYSQL -e "SHOW BINARY LOGS;"
+         $DOCK "mysql -e \"SHOW BINARY LOGS;\"; exit;"
          if [[ $? -ne 0 ]] ; then
             echo "ERROR"
             exit 1
@@ -82,7 +87,8 @@ ExecuteOnDB ()
       fi
       
       if ! [ -z "$TIMESTAMP" ]; then
-         $MYSQL -e "PURGE BINARY LOGS BEFORE '$TIMESTAMP';"
+         # $MYSQL -e "PURGE BINARY LOGS BEFORE '$TIMESTAMP';"
+         $DOCK "mysql -e \"PURGE BINARY LOGS BEFORE '$TIMESTAMP';\"; exit;"
          if [[ $? -ne 0 ]] ; then
             echo "ERROR"
             exit 1
@@ -91,7 +97,8 @@ ExecuteOnDB ()
       fi
 
       if ! [ -z "$BINLOGFILE" ] ; then
-         $MYSQL -e "PURGE BINARY LOGS TO '$BINLOGFILE';"
+         # $MYSQL -e "PURGE BINARY LOGS TO '$BINLOGFILE';"
+         $DOCK "mysql -e \"PURGE BINARY LOGS TO '$BINLOGFILE';\"; exit;"
          if [[ $? -ne 0 ]] ; then
             exit 1
          fi
