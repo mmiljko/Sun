@@ -18,13 +18,14 @@ Help()
    echo "-l                 Show binlog files."
    echo "-t <timestamp>     Purge binary logs before <timestamp>."
    echo "-b <binlogfile>    Purge binary logs to <binlogfile>."
+   echo "-f                 Flush binary logs."
    
 }
 
 GetArguments()
 {
    OPTIND=1
-   while getopts ":lt:b:" option; do
+   while getopts ":lt:b:f" option; do
       case ${option} in
          l) 
             CMD=l
@@ -59,6 +60,10 @@ GetArguments()
 
             return 0
             ;;
+         f)
+            CMD=f
+            return 0
+            ;;
          :)  # Nije proslijeden argument
             echo "Please provide an argument for -${OPTARG} option."
             exit 1
@@ -83,7 +88,13 @@ ExecuteOnDB ()
             echo "ERROR"
             exit 1
          fi
-         exit 0
+      elif [ "$CMD" == "f" ] ; then
+         $DOCK "mysql -e \"FLUSH BINARY LOGS;\"; exit;"
+         if [[ $? -ne 0 ]] ; then
+            echo "ERROR"
+            exit 1
+         fi
+      exit 0
       fi
       
       if ! [ -z "$TIMESTAMP" ]; then
